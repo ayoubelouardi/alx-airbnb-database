@@ -41,3 +41,20 @@ This file focuses on using subqueries to perform complex data filtering and anal
 
 * **Non-Correlated Subquery**: The first query uses a subquery in the `WHERE` clause (`IN` operator) to identify properties based on an aggregated value (average rating). The inner query calculates the average rating for all properties independently, and the outer query uses the results for filtering.
 * **Correlated Subquery**: The second query uses a subquery in the `WHERE` clause that **references a column from the outer query** (`u.user_id`). This technique is used to dynamically check the number of bookings for *each specific user* being evaluated by the outer query, identifying users with high booking activity.
+
+### ➡️ New File Added to `database-adv-script/`
+
+| File Name | Description |
+| :--- | :--- |
+| `aggregations_and_window_functions.sql` | **Aggregation and Window Functions**: Scripts for summarizing data using `COUNT` with `GROUP BY`, and ranking properties using advanced window functions (`RANK` and `ROW_NUMBER`). |
+
+---
+
+## 📝 File Explanation: `aggregations_and_window_functions.sql`
+
+This file demonstrates two critical advanced SQL concepts for data analysis:
+
+* **Aggregation (`COUNT` and `GROUP BY`)**: The first query calculates the **total number of bookings** for every user. It uses a `LEFT JOIN` to include users with zero bookings and `COUNT(b.booking_id)` combined with `GROUP BY` to summarize the results by `user_id`.
+* **Window Functions (`RANK` and `ROW_NUMBER`)**: The second query uses a **Common Table Expression (CTE)** to calculate booking totals per property. It then applies:
+    * **`RANK()`**: Assigns a rank to each property based on the booking count. Properties with the same count receive the same rank, and the next rank skips a number.
+    * **`ROW_NUMBER()`**: Assigns a unique, sequential number to each property in the ranked list, even if they have the same booking count.

@@ -1,24 +1,57 @@
--- ALX Airbnb Database Module: Index Creation Commands
+-- ALX Airbnb Database Module: Index Creation Commands and Performance Analysis
 
--- These indexes are created to optimize query performance, primarily targeting
+-- Test Query: Find the total number of bookings made by each user.
+-- This query is used to demonstrate the performance gain from indexing.
+
+-- === 1. PERFORMANCE BEFORE INDEXING (CHECK) ===
+-- Use EXPLAIN ANALYZE to capture baseline performance before creating indexes.
+EXPLAIN ANALYZE
+SELECT
+  u.user_id,
+  u.username,
+  COUNT(b.booking_id) AS total_bookings
+FROM Users AS u
+LEFT JOIN Bookings AS b
+  ON u.user_id = b.user_id
+GROUP BY
+  u.user_id,
+  u.username
+ORDER BY
+  total_bookings DESC;
+
+-- === 2. INDEX CREATION ===
+-- Create indexes to optimize query performance, primarily targeting
 -- columns frequently used in JOIN, WHERE, and ORDER BY clauses (Foreign Keys and lookup fields).
 
--- 1. Index for Bookings to User join/lookup
--- Highly used for aggregations (total bookings per user) and correlated subqueries.
+-- Index for Bookings to User join/lookup
 CREATE INDEX idx_bookings_user_id
 ON Bookings (user_id);
 
--- 2. Index for Bookings to Property join/lookup
--- Highly used for aggregations (ranking properties by bookings).
+-- Index for Bookings to Property join/lookup
 CREATE INDEX idx_bookings_property_id
 ON Bookings (property_id);
 
--- 3. Index for Reviews to Property join/lookup
--- Crucial for performance of average rating subqueries.
+-- Index for Reviews to Property join/lookup
 CREATE INDEX idx_reviews_property_id
 ON Reviews (property_id);
 
--- 4. Unique Index on User email
--- Speeds up lookups by email (e.g., login) and ensures data integrity.
+-- Unique Index on User email
 CREATE UNIQUE INDEX idx_users_email
 ON Users (email);
+
+
+-- === 3. PERFORMANCE AFTER INDEXING (CHECK) ===
+-- Use EXPLAIN ANALYZE again to capture performance after creating indexes.
+EXPLAIN ANALYZE
+SELECT
+  u.user_id,
+  u.username,
+  COUNT(b.booking_id) AS total_bookings
+FROM Users AS u
+LEFT JOIN Bookings AS b
+  ON u.user_id = b.user_id
+GROUP BY
+  u.user_id,
+  u.username
+ORDER BY
+  total_bookings DESC;
